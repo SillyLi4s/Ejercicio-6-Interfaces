@@ -1,2 +1,2 @@
-# Laboratorio-3-herencia-AlvaroFlores
-Lab 3
+# Ejercicio 6 - Polimorfismo por interfaces
+Alvaro Flores - 261868
