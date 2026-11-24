@@ -1,3 +1,6 @@
+import javax.swing.*;
+import java.awt.*;
+
 public class QuoteWidget implements Widget {
     private String id;
     private String nombre;
@@ -11,23 +14,18 @@ public class QuoteWidget implements Widget {
         this.frase = frase;
     }
 
-    public String getId() {
-        return id;
-    }
-    public String getNombre() {
-        return nombre;
-    }
-    public int getConsumo() {
-        return consumo;
+    @Override
+    public JComponent obtenerVista() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createTitledBorder(nombre + " (" + consumo + " KB)"));
+
+        JLabel lblFrase = new JLabel("<html><center>\"" + frase + "\"</center></html>", SwingConstants.CENTER);
+        panel.add(lblFrase, BorderLayout.CENTER);
+        return panel;
     }
 
-    public void recargar(){}
-    public void dibujar(){
-        System.out.println("Cita: " + frase);
-    }    
-
-    public Boolean esVisible(){
-        return true;
-    }
-    
+    @Override public String getId() { return id; }
+    @Override public String getNombre() { return nombre; }
+    @Override public int getConsumo() { return consumo; }
+    @Override public boolean esVisible() { return true; }
 }

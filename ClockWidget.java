@@ -1,3 +1,5 @@
+import javax.swing.*;
+import java.awt.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -12,38 +14,23 @@ public class ClockWidget implements Widget {
         this.consumo = consumo;
     }
 
-    public String getId() {
-        return id;
-    }
-    public String getNombre() {
-        return nombre;
-    }
-    public int getConsumo() {
-        return consumo;
-    }
+    @Override
+    public JComponent obtenerVista() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createTitledBorder(nombre + " (" + consumo + " KB)"));
 
-    public void recargar(){}
-    public void dibujar(){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-        System.out.println("reloj:");
-        while (true) {
-            // Obtenemos la hora actual
-            LocalTime horaActual = LocalTime.now();
-            
-            // Imprimimos la hora formateada (\r sobrescribe la línea anterior)
-            System.out.print("\rHora actual: " + horaActual.format(dtf));
+        JLabel lblHora = new JLabel("Hora: " + LocalTime.now().format(dtf), SwingConstants.CENTER);
+        
+        // Timer de Swing para actualizar en tiempo real sin congelar la ventana
+        new Timer(1000, e -> lblHora.setText("Hora: " + LocalTime.now().format(dtf))).start();
 
-            try {
-                // Pausamos el programa durante 1000 milisegundos (1 segundo)
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                System.out.println("\nEl reloj fue interrumpido.");
-                break;
-            }
-        }
-    }    
-
-    public Boolean esVisible(){
-        return true;
+        panel.add(lblHora, BorderLayout.CENTER);
+        return panel;
     }
+
+    @Override public String getId() { return id; }
+    @Override public String getNombre() { return nombre; }
+    @Override public int getConsumo() { return consumo; }
+    @Override public boolean esVisible() { return true; }
 }

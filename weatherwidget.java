@@ -1,13 +1,17 @@
-public class weatherwidget implements Widget {
-    private String Id;
+import javax.swing.*;
+import java.awt.*;
+
+public class WeatherWidget implements Widget, WidgetInteractivo {
+    private String id;
     private String nombre;
     private int consumo;
     private double temp;
     private boolean esCelsius;
     private enumCiudad ciudad;
+    private JLabel lblInfo;
 
-    public weatherwidget(String Id, String nombre, int consumo, double temp, boolean esCelsius, enumCiudad ciudad){
-        this.Id = Id;
+    public WeatherWidget(String id, String nombre, int consumo, double temp, boolean esCelsius, enumCiudad ciudad) {
+        this.id = id;
         this.nombre = nombre;
         this.consumo = consumo;
         this.temp = temp;
@@ -15,40 +19,41 @@ public class weatherwidget implements Widget {
         this.ciudad = ciudad;
     }
 
-    public void recargar(){}
-    public void dibujar(){}
-    public Boolean esVisible(){
-        return true;
-    }
-
-    public void cambiartemp(double temp, boolean esCelsius){
-        // Cambia de Celsius a Fahrenheit o viceversa
-        if(this.esCelsius != esCelsius){
-            if(esCelsius){
-                this.temp = (temp - 32) * 5/9; // Convertir a Celsius
-            } else {
-                this.temp = (temp * 9/5) + 32; // Convertir a Fahrenheit
-            }
-            this.esCelsius = esCelsius;
+    @Override
+    public void interactuar() {
+        if (this.esCelsius) {
+            this.temp = (this.temp * 9.0 / 5.0) + 32;
+            this.esCelsius = false;
         } else {
-            this.temp = temp;
+            this.temp = (this.temp - 32) * 5.0 / 9.0;
+            this.esCelsius = true;
+        }
+        if (lblInfo != null) {
+            lblInfo.setText(formatearTexto());
         }
     }
 
-    public String getId(){
-        return Id;
+    private String formatearTexto() {
+        String unidad = esCelsius ? "°C" : "°F";
+        return String.format("%s: %.1f %s", ciudad, temp, unidad);
     }
-    public String getNombre(){
-        return nombre;
+
+    @Override
+    public JComponent obtenerVista() {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.setBorder(BorderFactory.createTitledBorder(nombre + " (" + consumo + " KB)"));
+
+        lblInfo = new JLabel(formatearTexto(), SwingConstants.CENTER);
+        JButton btnCambiar = new JButton("Cambiar °C / °F");
+        btnCambiar.addActionListener(e -> interactuar());
+
+        panel.add(lblInfo, BorderLayout.CENTER);
+        panel.add(btnCambiar, BorderLayout.SOUTH);
+        return panel;
     }
-    public int getConsumo(){
-        return consumo;
-    }
-    public double getTemp(){
-        return temp;
-    }
-    public enumCiudad getCiudad(){
-        return ciudad;
-    }
-    
+
+    @Override public String getId() { return id; }
+    @Override public String getNombre() { return nombre; }
+    @Override public int getConsumo() { return consumo; }
+    @Override public boolean esVisible() { return true; }
 }

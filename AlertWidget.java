@@ -1,11 +1,15 @@
-public class AlertWidget implements Widget {
+import javax.swing.*;
+import java.awt.*;
+
+public class AlertWidget implements Widget, WidgetInteractivo {
     private String id;
     private String nombre;
     private int consumo;
     private enumNivel nivel;
-    private Boolean esLeida;
+    private boolean esLeida;
+    private JLabel lblAlerta;
 
-    AlertWidget(String id, String nombre, int consumo, enumNivel nivel, Boolean esLeida) {
+    public AlertWidget(String id, String nombre, int consumo, enumNivel nivel, boolean esLeida) {
         this.id = id;
         this.nombre = nombre;
         this.consumo = consumo;
@@ -13,30 +17,36 @@ public class AlertWidget implements Widget {
         this.esLeida = esLeida;
     }
 
-    public String getId() {
-        return id;
-    }
-    public String getNombre() {
-        return nombre;
-    }
-    public int getConsumo() {
-        return consumo;
-    }
-    public enumNivel getNivel() {
-        return nivel;
-    }
-
-    public void recargar() {}
-    public void dibujar() {}
-    public Boolean esVisible() {
-        return true;
-    }
-
-    public Boolean marcarComoLeida() {
+    @Override
+    public void interactuar() {
         if (!esLeida) {
             esLeida = true;
-            return true;
+            if (lblAlerta != null) {
+                lblAlerta.setText(formatearAlerta());
+            }
         }
-        return false;
-    }    
+    }
+
+    private String formatearAlerta() {
+        return "Nivel: " + nivel + " | Estado: " + (esLeida ? "Leída" : "NO LEÍDA");
+    }
+
+    @Override
+    public JComponent obtenerVista() {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.setBorder(BorderFactory.createTitledBorder(nombre + " (" + consumo + " KB)"));
+
+        lblAlerta = new JLabel(formatearAlerta(), SwingConstants.CENTER);
+        JButton btnLeida = new JButton("Marcar como leída");
+        btnLeida.addActionListener(e -> interactuar());
+
+        panel.add(lblAlerta, BorderLayout.CENTER);
+        panel.add(btnLeida, BorderLayout.SOUTH);
+        return panel;
+    }
+
+    @Override public String getId() { return id; }
+    @Override public String getNombre() { return nombre; }
+    @Override public int getConsumo() { return consumo; }
+    @Override public boolean esVisible() { return true; }
 }
